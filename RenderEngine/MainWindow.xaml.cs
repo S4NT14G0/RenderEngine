@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RenderEngine.Rengine;
 
 namespace RenderEngine
 {
@@ -23,6 +24,11 @@ namespace RenderEngine
         public MainWindow()
         {
             InitializeComponent();
+
+            RengineImage test = new Rengine.RengineImage((int)renderCanvas.Width, (int)renderCanvas.Height);
+            renderCanvas.Source = test.GetImageSourceForBitmap();
+
+
         }
     }
 }

@@ -20,7 +20,7 @@ namespace RenderEngine.Rengine.Raycast
             this.S = _s;
         }
 
-        Vector3D GetPoint3D (double t)
+        public Vector3D GetPoint3D (double t)
         {
             // p(t) = e + (s - e) * t
             return E + (S - E) * t;

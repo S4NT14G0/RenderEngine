@@ -35,9 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Numerics, Version=3.17.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.17.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -56,9 +61,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Rengine\ExtensionMethods\Vector3DExtensions.cs" />
+    <Compile Include="Rengine\Images\RengineColor.cs" />
     <Compile Include="Rengine\Images\RengineImage.cs" />
+    <Compile Include="Rengine\Math\Vector3.cs" />
     <Compile Include="Rengine\Raycast\Ray.cs" />
+    <Compile Include="Rengine\RengineObjects\Camera.cs" />
+    <Compile Include="Rengine\RengineObjects\Light.cs" />
     <Compile Include="Rengine\RengineObjects\Sphere.cs" />
     <Compile Include="Rengine\Scene\Scene.cs" />
     <Page Include="MainWindow.xaml">

@@ -24,11 +24,8 @@ namespace RenderEngine
         public MainWindow()
         {
             InitializeComponent();
-
-            RengineImage test = new Rengine.RengineImage((int)renderCanvas.Width, (int)renderCanvas.Height);
-            renderCanvas.Source = test.GetImageSourceForBitmap();
-
-
+            RengineImage canvasImage = new Rengine.RengineImage((int)renderCanvas.Width, (int)renderCanvas.Height);
+            renderCanvas.Source = canvasImage.GetImageSourceForBitmap();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using RenderEngine.Rengine.Raycast;
+﻿ using RenderEngine.Rengine.Raycast;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,7 +9,7 @@ using System.Windows.Media.Media3D;
 
 namespace RenderEngine.Rengine.RengineObjects
 {
-    class Sphere
+    public class Sphere
     {
         public Vector3D Center { get; set; }
         public double Radius { get; set; }

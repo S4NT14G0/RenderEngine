@@ -7,7 +7,7 @@ using System.Windows.Media.Media3D;
 
 namespace RenderEngine.Rengine.Raycast
 {
-    class Ray
+    public class Ray
     {
         // Start point
         public Vector3D E { get; set; }

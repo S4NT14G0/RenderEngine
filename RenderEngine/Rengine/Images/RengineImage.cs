@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 
 namespace RenderEngine.Rengine
 {
-    class RengineImage
+    public class RengineImage
     {
         int width;
         int height;
@@ -29,16 +29,6 @@ namespace RenderEngine.Rengine
 
             bitmapImage = new Bitmap(width, height);
             pixels = new int[width, height];
-
-            // Fill array with random values
-            Random random = new Random();
-            for (int x = 0; x < width; ++x)
-            {
-                for (int y = 0; y < height; ++y)
-                {
-                    bitmapImage.SetPixel(x, y, System.Drawing.Color.FromArgb(random.Next(255), random.Next(255), random.Next(255), random.Next(255)));
-                }
-            }
         }
 
         public void SetPixel (int x, int y, System.Drawing.Color color)

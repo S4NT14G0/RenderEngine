@@ -61,9 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Rengine\Images\RengineColor.cs" />
     <Compile Include="Rengine\Images\RengineImage.cs" />
-    <Compile Include="Rengine\Math\Vector3.cs" />
     <Compile Include="Rengine\Raycast\Ray.cs" />
     <Compile Include="Rengine\RengineObjects\Camera.cs" />
     <Compile Include="Rengine\RengineObjects\Light.cs" />

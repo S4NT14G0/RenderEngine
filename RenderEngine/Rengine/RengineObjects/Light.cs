@@ -7,7 +7,7 @@ using System.Windows.Media.Media3D;
 
 namespace RenderEngine.Rengine.RengineObjects
 {
-    class Light
+    public class Light
     {
         public Vector3D Position { get; set; }
 

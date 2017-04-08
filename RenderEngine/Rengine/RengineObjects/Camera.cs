@@ -1,4 +1,5 @@
 ﻿using RenderEngine.Rengine.Raycast;
+using RenderEngine.Rengine.RengineScene;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,19 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
+
 namespace RenderEngine.Rengine.RengineObjects
 {
     public class Camera
     {
-        Vector3D Position { get; set; }
+        public Vector3D Position { get; set; }
 
-        double FocalDistance { get; set; }
+        public double FocalDistance { get; set; }
 
-        RengineImage canvas = new RengineImage(1028, 720);
+        RengineImage canvas;
 
-        public Camera()
+        public Camera(int renderWidth, int renderHeight)
         {
-            RenderScene();
+            canvas = new RengineImage(renderWidth, renderHeight);
         }
 
         public RengineImage GetCanvas()
@@ -27,53 +29,31 @@ namespace RenderEngine.Rengine.RengineObjects
             return canvas;
         }
 
-        public void RenderScene ()
+        public void RenderScene (Scene scene)
         {
-            // Eye position
-            Vector3D e = new Vector3D(0, 0, 0);
-
-            // Focal distance
-            float f = 130;
-
             // Light unit vector
-            Vector3D l = new Vector3D(0.5, 0.5, 1);
+            Vector3D l = scene.DirectionalLight.Position;
             l.Normalize();
 
             // Background color
-            Vector3D kb = new Vector3D(0, 0, 100);
+            Vector3D kb = scene.SkyBoxColor;
 
-            List<Sphere> spheres = new List<Sphere>();
-
-            // Create spheres
-            Vector3D center = new Vector3D(10, 10, -75);
-            float radius = 30;
-            Vector3D color = new Vector3D(100, 0, 0);
-            Sphere s1 = new Sphere(center, radius, color);
-
-            Vector3D center1 = new Vector3D(10, 10, -35);
-            float radius1 = 10;
-            Vector3D color1 = new Vector3D(100, 100, 0);
-            Sphere s2 = new Sphere(center1, radius1, color1);
-
-            spheres.Add(s1);
-            spheres.Add(s2);
-
-            for (int i = 0; i < 1028; i++)
+            for (int i = 0; i < canvas.GetWidth(); i++)
             {
-                for (int j = 0; j < 720; j++)
+                for (int j = 0; j < canvas.GetHeight(); j++)
                 {
-                    Vector3D s = GetPoint_s(i, j, f, 1028, 720);
+                    Vector3D s = GetPoint_s(i, j, FocalDistance, 1028, 720);
 
-                    Ray ray = new Ray(e, s);
+                    Ray ray = new Ray(Position, s);
 
-                    Vector3D col = RayHitColor(ray, l, spheres, kb);
+                    Vector3D col = ColorAtRayHit(ray, l, scene.SceneObjects, kb);
 
                     canvas.SetPixel(i, j, System.Drawing.Color.FromArgb((int)col.X,(int) col.Y, (int)col.Z));
                 }
             }
         }
 
-        private Vector3D GetPoint_s (int i, int j, float focal, int canvasRows, int canvasCols)
+        private Vector3D GetPoint_s (int i, int j, double focal, int canvasRows, int canvasCols)
         {
             float u = (float)((j - 1) - canvasCols / 2 + .5);
             float v =  (float)(-1 * ((i - 1 - canvasRows / 2 + .5)));
@@ -81,13 +61,13 @@ namespace RenderEngine.Rengine.RengineObjects
             return new Vector3D(u, v, -focal);
         }
 
-        public Vector3D RayHitColor(Ray ray, Vector3D light, List<Sphere> spheres, Vector3D bgColor)
+        public Vector3D ColorAtRayHit(Ray ray, Vector3D light, List<RengineObject> sceneObjects, Vector3D bgColor)
         {
             List<KeyValuePair<int, double>> tIntersections = new List<KeyValuePair<int, double>>();
 
-            for (int i = 0; i < spheres.Count; i++)
+            for (int i = 0; i < sceneObjects.Count; i++)
             {
-                double t = spheres[i].Intersect(ray);
+                double t = sceneObjects[i].Intersect(ray);
                 tIntersections.Add(new KeyValuePair<int, double>(i, t));
             }
 
@@ -100,11 +80,9 @@ namespace RenderEngine.Rengine.RengineObjects
                     closestT = tList;
             }
 
-            //KeyValuePair<int, double> closestT = tIntersections.Min();
-
             if (!double.IsInfinity(closestT.Value))
             {
-                return Shade(spheres[closestT.Key], ray, closestT.Value, light);
+                return Shade(sceneObjects[closestT.Key], ray, closestT.Value, light);
             }
             else
             {
@@ -112,30 +90,32 @@ namespace RenderEngine.Rengine.RengineObjects
             }
         }
 
-        public Vector3D Shade (Sphere sphere, Ray ray, double t, Vector3D l)
+        public Vector3D Shade (RengineObject rengineObject, Ray ray, double t, Vector3D l)
         {
             Vector3D p = ray.GetPoint3D(t);
 
             Vector3D color = new Vector3D(0, 0, 0);
-
-            return color + Phong (sphere, p, l, ray);
+            //return rengineObject.AlbedoColor + Phong(rengineObject, p, l, ray);
+            return color + Phong (rengineObject, p, l, ray);
         }
 
-        public Vector3D Phong (Sphere sphere, Vector3D p, Vector3D l, Ray ray)
+        public Vector3D Phong (RengineObject rengineObject, Vector3D p, Vector3D l, Ray ray)
         {
-            Vector3D k = sphere.AlbedoColor;
+            Vector3D k = rengineObject.AlbedoColor;
 
-            Vector3D n = sphere.Normal(p);
+            Vector3D n = rengineObject.Normal(p);
 
-            Vector3D diffuse = k * System.Math.Max(0, Vector3D.DotProduct(l, n));
+            Vector3D diffuse = k * Math.Max(0, Vector3D.DotProduct(l, n));
 
             Vector3D v = (ray.E - p);
+
             v.Normalize();
             double p_phong = 128;
+
             Vector3D h = v + l;
             h.Normalize();
 
-            Vector3D ls = k * System.Math.Pow(System.Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
+            Vector3D ls = k * Math.Pow(System.Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
 
             return diffuse + ls;
         }

@@ -36,6 +36,9 @@ namespace RenderEngine.Rengine
             bitmapImage.SetPixel(x, y, color);
         }
 
+        public int GetWidth () { return this.width; }
+        public int GetHeight () { return this.height; }
+
         public Bitmap GetBitmapImage ()
         {
             return bitmapImage;

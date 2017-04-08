@@ -9,11 +9,11 @@ using System.Windows.Media.Media3D;
 
 namespace RenderEngine.Rengine.RengineObjects
 {
-    public class Sphere
+    public class Sphere : RengineObject
     {
-        public Vector3D Center { get; set; }
+        public override Vector3D Center { get; set; }
         public double Radius { get; set; }
-        public Vector3D AlbedoColor { get; set; }
+        public override Vector3D AlbedoColor { get; set; }
 
         public Sphere (Vector3D _center, double _radius, Vector3D _albedoColor)
         {
@@ -27,7 +27,7 @@ namespace RenderEngine.Rengine.RengineObjects
 
         }
 
-        public double Intersect (Ray ray)
+        public override double Intersect (Ray ray)
         {
             Vector3D d = ray.S - ray.E;
 
@@ -52,7 +52,7 @@ namespace RenderEngine.Rengine.RengineObjects
             }
         }
 
-        public Vector3D Normal(Vector3D point)
+        public override Vector3D Normal(Vector3D point)
         {
             //return Vector3D.Divide( (point - Center), (point - Center).Length);
             Vector3D normalPoint = (point - Center);
@@ -60,7 +60,7 @@ namespace RenderEngine.Rengine.RengineObjects
             return normalPoint;
         }
 
-        public Vector3D GetColor (Ray ray, Vector3D light)
+        public override Vector3D GetColor (Ray ray, Vector3D light)
         {
             double t = Intersect(ray);
 

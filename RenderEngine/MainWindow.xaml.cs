@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using RenderEngine.Rengine;
 using RenderEngine.Rengine.RengineObjects;
+using RenderEngine.Rengine.RengineScene;
+using System.Windows.Media.Media3D;
 
 namespace RenderEngine
 {
@@ -25,11 +27,35 @@ namespace RenderEngine
         public MainWindow()
         {
             InitializeComponent();
-            //RengineImage canvasImage = new Rengine.RengineImage((int)renderCanvas.Width, (int)renderCanvas.Height);
-            //renderCanvas.Source = canvasImage.GetImageSourceForBitmap();
 
-            Camera cam = new Camera();
-            renderCanvas.Source = cam.GetCanvas().GetImageSourceForBitmap();
+            Scene scene = new Scene();
+
+            scene.SkyBoxColor = new Vector3D(30,144,255);
+
+            Rengine.RengineObjects.Camera cam = new Rengine.RengineObjects.Camera(1028, 720);
+            cam.Position = new Vector3D(0, 0, 0);
+            cam.FocalDistance = 130;
+
+            Rengine.RengineObjects.Light light = new Rengine.RengineObjects.Light(new Vector3D(.5, .5, 1));
+
+            // Create spheres
+            Vector3D center = new Vector3D(10, 10, -75);
+            float radius = 30;
+            Vector3D color = new Vector3D(101, 0, 0);
+            Sphere s1 = new Sphere(center, radius, color);
+
+            Vector3D center1 = new Vector3D(10, 10, -35);
+            float radius1 = 10;
+            Vector3D color1 = new Vector3D(100, 100, 0);
+            Sphere s2 = new Sphere(center1, radius1, color1);
+
+            scene.SceneObjects.Add(s1);
+            scene.SceneObjects.Add(s2);
+
+            scene.DirectionalLight = light;
+            scene.MainCamera = cam;
+
+            renderCanvas.Source =  scene.Render().GetImageSourceForBitmap();
         }
     }
 }

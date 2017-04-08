@@ -65,8 +65,9 @@
     <Compile Include="Rengine\Raycast\Ray.cs" />
     <Compile Include="Rengine\RengineObjects\Camera.cs" />
     <Compile Include="Rengine\RengineObjects\Light.cs" />
+    <Compile Include="Rengine\RengineObjects\RengineObject.cs" />
     <Compile Include="Rengine\RengineObjects\Sphere.cs" />
-    <Compile Include="Rengine\Scene\Scene.cs" />
+    <Compile Include="Rengine\RengineScene\Scene.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

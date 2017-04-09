@@ -65,6 +65,7 @@
     <Compile Include="Rengine\Raycast\Ray.cs" />
     <Compile Include="Rengine\RengineObjects\Camera.cs" />
     <Compile Include="Rengine\RengineObjects\Light.cs" />
+    <Compile Include="Rengine\RengineObjects\Plane.cs" />
     <Compile Include="Rengine\RengineObjects\RengineObject.cs" />
     <Compile Include="Rengine\RengineObjects\Sphere.cs" />
     <Compile Include="Rengine\RengineScene\Scene.cs" />

@@ -54,7 +54,6 @@ namespace RenderEngine.Rengine.RengineObjects
 
         public override Vector3D Normal(Vector3D point)
         {
-            //return Vector3D.Divide( (point - Center), (point - Center).Length);
             Vector3D normalPoint = (point - Center);
             normalPoint.Normalize();
             return normalPoint;

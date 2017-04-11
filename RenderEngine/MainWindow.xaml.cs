@@ -32,7 +32,7 @@ namespace RenderEngine
 
             scene.SkyBoxColor = new Vector3D(30,144,255);
 
-            Rengine.RengineObjects.Camera cam = new Rengine.RengineObjects.Camera(1028, 1028);
+            Rengine.RengineObjects.Camera cam = new Rengine.RengineObjects.Camera(720, 1028);
             cam.Position = new Vector3D(0, 0, 0);
             cam.FocalDistance = 130;
 
@@ -50,7 +50,7 @@ namespace RenderEngine
             Sphere s2 = new Sphere(center1, radius1, color1);
 
             Plane p = new Plane(new Vector3D(0 ,100, 1), 1);
-            p.AlbedoColor = new Vector3D(255, 255, 120);
+            p.AlbedoColor = new Vector3D(124, 252, 0);
 
             scene.SceneObjects.Add(s1);
             scene.SceneObjects.Add(s2);

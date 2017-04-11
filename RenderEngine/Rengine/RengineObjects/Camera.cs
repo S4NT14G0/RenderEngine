@@ -99,10 +99,9 @@ namespace RenderEngine.Rengine.RengineObjects
         {
             Vector3D p = ray.GetPoint3D(t);
 
-            return rengineObject.GetColor(ray, l);
-            //Vector3D color = new Vector3D(0, 0, 0);
-            //return rengineObject.AlbedoColor + Phong(rengineObject, p, l, ray);
-            //return color + Phong (rengineObject, p, l, ray);
+            Vector3D color = new Vector3D(0, 0, 0);
+            
+            return color + Phong (rengineObject, p, l, ray);
         }
 
         public Vector3D Phong (RengineObject rengineObject, Vector3D p, Vector3D l, Ray ray)

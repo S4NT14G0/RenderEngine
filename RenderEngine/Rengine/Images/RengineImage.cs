@@ -31,6 +31,21 @@ namespace RenderEngine.Rengine
             pixels = new int[width, height];
         }
 
+        public void RotateClockwise ()
+        {
+            bitmapImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+        }
+
+        public RengineImage (int[,] _pixels)
+        {
+            width = pixels.GetLength(0);
+            height = pixels.GetLength(1);
+
+            bitmapImage = new Bitmap(width, height);
+            pixels = _pixels;
+        }
+
+
         public void SetPixel (int x, int y, System.Drawing.Color color)
         {
             bitmapImage.SetPixel(x, y, color);
@@ -46,6 +61,7 @@ namespace RenderEngine.Rengine
 
         public ImageSource GetImageSourceForBitmap ()
         {
+            RotateClockwise();
             var handle = bitmapImage.GetHbitmap();
             try
             {

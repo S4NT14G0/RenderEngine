@@ -48,7 +48,12 @@ namespace RenderEngine.Rengine.RengineObjects
 
                     Vector3D col = ColorAtRayHit(ray, l, scene.SceneObjects, kb);
 
-                    canvas.SetPixel(i, j, System.Drawing.Color.FromArgb((int)col.X,(int) col.Y, (int)col.Z));
+                    int r = (col.X >= 0  && col.X <= 255) ? (int)col.X : 0;
+                    int g = (col.Y >= 0 && col.Y <= 255) ? (int)col.Y: 0;
+                    int b = (col.Z >= 0 && col.Z<= 255) ? (int)col.Z : 0;
+
+
+                    canvas.SetPixel(i, j, Color.FromArgb(255, r, g, b));
                 }
             }
         }

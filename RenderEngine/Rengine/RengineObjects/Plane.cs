@@ -71,7 +71,7 @@ namespace RenderEngine.Rengine.RengineObjects
             Vector3D P = Center;
             double d = Distance(P, O);
             Vector3D N = Normal(P);
-            N.Normalize();
+            //N.Normalize();
 
             //N.P + d = 0
 
@@ -105,8 +105,6 @@ namespace RenderEngine.Rengine.RengineObjects
             Vector3D b = new Vector3D(Center.X, Center.Y, Center.Z + Size);
 
             return Vector3D.CrossProduct((b - a), (c - a));
-
-            // N = (b - a) X (c - a)
 
         }
     }

@@ -36,30 +36,31 @@ namespace RenderEngine.Rengine.RengineObjects
         public void RenderScene (Scene scene)
         {
             // Light unit vector
-            Vector3D l = scene.DirectionalLight.Position;
+            //Vector3D l = scene.DirectionalLight.Position;
             //l.Normalize();
 
             // Background color
             Vector3D kb = scene.SkyBoxColor;
 
-            for (int i = 0; i < canvas.GetWidth(); i++)
+            Vector3D[,] pixels = new Vector3D[canvas.GetWidth(), canvas.GetHeight()];
+
+            for (int i = 0; i < pixels.GetLength(0); i++)
             {
-                for (int j = 0; j < canvas.GetHeight(); j++)
+                for (int j = 0; j < pixels.GetLength(1); j++)
                 {
                     // Construct ray from pixel
-                    Vector3D s = GetPoint_s(i, j, FocalDistance, canvas.GetWidth(), canvas.GetHeight());
+                    Vector3D s = GetPoint_s(i, j, FocalDistance, pixels.GetLength(0), pixels.GetLength(1));
 
                     // Construct a new ray from camera position towards the pixel
                     Ray ray = new Ray(Position, s);
 
                     // Get color where the ray hits
-                    Vector3D col = ColorAtRayHit(ray, l, scene.SceneObjects, kb);
+                    Vector3D col = ColorAtRayHit(ray, scene.DirectionalLight, scene.SceneObjects, kb);
 
                     // Normalize the coords so they don't go out of range
                     int r = (col.X >= 0  && col.X <= 255) ? (int)col.X : 0;
                     int g = (col.Y >= 0 && col.Y <= 255) ? (int)col.Y: 0;
                     int b = (col.Z >= 0 && col.Z<= 255) ? (int)col.Z : 0;
-
 
                     canvas.SetPixel(i, j, Color.FromArgb(255, r, g, b));
                 }
@@ -82,9 +83,8 @@ namespace RenderEngine.Rengine.RengineObjects
         /// <param name="sceneObjects"></param>
         /// <param name="bgColor"></param>
         /// <returns></returns>
-        public Vector3D ColorAtRayHit(Ray ray, Vector3D light, List<RengineObject> sceneObjects, Vector3D bgColor)
+        public Vector3D ColorAtRayHit(Ray ray, Light light, List<RengineObject> sceneObjects, Vector3D bgColor)
         {
-            
             // Index and t value
             List<KeyValuePair<int, double>> tIntersections = new List<KeyValuePair<int, double>>();
 
@@ -108,8 +108,10 @@ namespace RenderEngine.Rengine.RengineObjects
             // Has it hit the skybox
             if (!double.IsInfinity(closestT.Value))
             {
+                Vector3D normal = sceneObjects[closestT.Key].Normal(ray.GetPoint3D(closestT.Value));
+
                 // Get the shade at the hit point
-                return Shade(sceneObjects, sceneObjects[closestT.Key], ray, closestT.Value, light);
+                return sceneObjects[closestT.Key].Shade(ray, closestT.Value, normal, light);
             }
             else
             {
@@ -117,72 +119,6 @@ namespace RenderEngine.Rengine.RengineObjects
             }
         }
 
-        /// <summary>
-        /// Shade the intersected object
-        /// </summary>
-        /// <param name="rengineObject"></param>
-        /// <param name="ray"></param>
-        /// <param name="t"></param>
-        /// <param name="l"></param>
-        /// <returns></returns>
-        public Vector3D Shade (List<RengineObject> sceneObjects, RengineObject rengineObject, Ray ray, double t, Vector3D l)
-        {
-            // Point of intersection
-            Vector3D p = ray.GetPoint3D(t);
-
-            // Cache for calculation
-            Vector3D color = new Vector3D(0, 0, 0);
-
-            if (IsShadowAtPoint(p, l, sceneObjects))
-                return color;
-            
-            return color + Phong(rengineObject, p, l, ray);
-
-        }
-
-        public Vector3D Phong (RengineObject rengineObject, Vector3D p, Vector3D l, Ray ray)
-        {
-            // Object color
-            Vector3D k = rengineObject.AlbedoColor;
-
-            // normal of object
-            Vector3D n = rengineObject.Normal(p);
-
-            // Diffuse shading
-            Vector3D diffuse = k * Math.Max(0, Vector3D.DotProduct(l, n));
-
-            Vector3D v = (ray.E - p);
-            v.Normalize();
-            double p_phong = 128;
-
-            Vector3D h = v + l;
-            h.Normalize();
-
-            Vector3D ls = k * Math.Pow(System.Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
-
-            return diffuse + ls;
-        }
-
-        Boolean IsShadowAtPoint (Vector3D p, Vector3D l, List<RengineObject> sceneObjects)
-        {
-            // Shoot ray from p to light
-            // If it hits light then we return false
-            // If there is interesection return true
-
-            Ray rayToLight = new Ray(l, p);
-            Vector3D sigma = rayToLight.GetPoint3D(4);
-            rayToLight = new Ray(sigma, l);
-
-            foreach (RengineObject sceneObject in sceneObjects)
-            {
-                if (!double.IsInfinity(sceneObject.Intersect(rayToLight))) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
-
     
 }

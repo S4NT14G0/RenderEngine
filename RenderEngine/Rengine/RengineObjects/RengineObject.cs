@@ -18,5 +18,6 @@ namespace RenderEngine.Rengine.RengineObjects
 
         public abstract Vector3D GetColor(Ray ray, Vector3D lightVector);
 
+        public abstract Vector3D Shade(Ray ray, double t, Vector3D normal, Light light);
     }
 }

@@ -50,46 +50,15 @@ namespace RenderEngine.Rengine.RengineObjects
 
         public override double Intersect(Ray ray)
         {
-            // O is ray starting point
-            // D is normalized ray direction vector
-            // t is parameter that gives you a point (R (t)) on the ray
+            Vector3D n = Normal(Center);
+            double numerator = Vector3D.DotProduct((Center - ray.E), n);
+            double denominator = Vector3D.DotProduct((ray.S - ray.E), n);
+            double t =  numerator / denominator;
 
-            // R (t) = O + tD
-            Vector3D O = ray.E;
-            Vector3D D = ray.S;
-            D.Normalize();
-            // T = distance along ray
-
-
-            // plane equation is
-            // ax + by + cz + d = 0
-
-            // N is the plane normal
-            // P is a point on the plane
-            // d is distance of plane from the origin
-
-            Vector3D P = Center;
-            double d = Distance(P, O);
-            Vector3D N = Normal(P);
-            //N.Normalize();
-
-            //N.P + d = 0
-
-            //N . (O + tD) + d = 0
-
-            //N.O + t(N.D) + d = 0
-
-            //t = -(N.O + d) / (N.D)
-            double t = -(Vector3D.DotProduct(N, O) + d) / (Vector3D.DotProduct(N, D));
-
-            if (t < 0)
-            {
-                return double.PositiveInfinity;
-            }
-            else
-            {
+            if (t > 0)
                 return t;
-            }
+            else
+                return double.PositiveInfinity;
         }
 
         private double Distance (Vector3D p, Vector3D q)
@@ -100,12 +69,76 @@ namespace RenderEngine.Rengine.RengineObjects
 
         public override Vector3D Normal(Vector3D point)
         {
-            Vector3D c = Center;
+            Vector3D c = new Vector3D(Center.X, Center.Y, Center.Z);
             Vector3D a = new Vector3D(Center.X - Size, Center.Y, Center.Z);
             Vector3D b = new Vector3D(Center.X, Center.Y, Center.Z + Size);
 
-            return Vector3D.CrossProduct((b - a), (c - a));
+            //Vector3D c = new Vector3D(1, 0, 0);
+            //Vector3D a = new Vector3D(0, 0, 0);
+            //Vector3D b = new Vector3D(0, 0, 1);
 
+            Vector3D n = Vector3D.CrossProduct((b - a), (c - a));
+            return n;
+
+        }
+
+        /// <summary>
+        /// Calculate this object shading at point
+        /// </summary>
+        /// <param name="ray"></param>
+        /// <param name="t"></param>
+        /// <param name="normal"></param>
+        /// <param name="light"></param>
+        /// <returns></returns>
+        public override Vector3D Shade(Ray ray, double t, Vector3D normal, Light light)
+        {
+            // Point of intersection
+            Vector3D p = ray.GetPoint3D(t);
+
+            // Cache for calculation
+            Vector3D color = new Vector3D(0, 0, 0);
+            Vector3D dirToLight = p - light.Position;
+            Ray shadowRay = new Ray(p, dirToLight);
+            Vector3D pPrime = shadowRay.GetPoint3D(0.005);
+
+            dirToLight = pPrime - light.Position;
+            shadowRay = new Ray(pPrime, dirToLight);
+
+
+            if (shadowRay.Hit() != null)
+                return color;
+
+            return color + Phong(p, light, ray);
+        }
+
+        /// <summary>
+        /// Lambertian shading
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="l"></param>
+        /// <param name="ray"></param>
+        /// <returns></returns>
+        public Vector3D Phong(Vector3D p, Light l, Ray ray)
+        {
+            // Object color
+            Vector3D k = AlbedoColor;
+
+            // normal of object
+            Vector3D n = Normal(p);
+
+            // Diffuse shading
+            Vector3D diffuse = k * Math.Max(0, Vector3D.DotProduct(l.Position, n));
+
+            Vector3D v = (ray.E - p);
+            v.Normalize();
+            double p_phong = 128;
+
+            Vector3D h = v + l.Position;
+            h.Normalize();
+
+            Vector3D ls = k * Math.Pow(System.Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
+
+            return diffuse + ls;
         }
     }
 }

@@ -82,5 +82,51 @@ namespace RenderEngine.Rengine.RengineObjects
                 return new Vector3D(0, 0, 0);
             }
         }
+
+        public override Vector3D Shade(Ray ray, double t, Vector3D normal, Light light)
+        {
+            // Point of intersection
+            Vector3D p = ray.GetPoint3D(t);
+
+            // Cache for calculation
+            Vector3D color = new Vector3D(0, 0, 0);
+            Vector3D dirToLight = p - light.Position;
+            Ray shadowRay = new Ray(p, dirToLight);
+            Vector3D pPrime = shadowRay.GetPoint3D(0.005);
+
+            dirToLight = pPrime - light.Position;
+            shadowRay = new Ray(pPrime, dirToLight);
+
+
+            if (shadowRay.Hit() != null && shadowRay.Hit() != this)
+                return color;
+
+            return color + Phong(p, light, ray);
+        }
+
+        public Vector3D Phong(Vector3D p, Light l, Ray ray)
+        {
+            // Object color
+            Vector3D k = AlbedoColor;
+
+            // normal of object
+            Vector3D n = Normal(p);
+
+            // Diffuse shading
+            Vector3D diffuse = k * Math.Max(0, Vector3D.DotProduct(l.Position, n));
+
+            Vector3D v = (ray.E - p);
+            v.Normalize();
+            double p_phong = 128;
+
+            // Direction of the bounced light
+            Vector3D h = v + l.Position;
+            h.Normalize();
+
+            Vector3D ls = k * Math.Pow(System.Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
+
+            return diffuse + ls;
+        }
+
     }
 }

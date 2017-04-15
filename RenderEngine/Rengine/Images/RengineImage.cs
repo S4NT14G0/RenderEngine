@@ -36,15 +36,6 @@ namespace RenderEngine.Rengine
             bitmapImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
         }
 
-        public RengineImage (int[,] _pixels)
-        {
-            width = pixels.GetLength(0);
-            height = pixels.GetLength(1);
-
-            bitmapImage = new Bitmap(width, height);
-            pixels = _pixels;
-        }
-
 
         public void SetPixel (int x, int y, System.Drawing.Color color)
         {

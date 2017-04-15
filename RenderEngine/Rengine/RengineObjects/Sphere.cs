@@ -13,6 +13,10 @@ namespace RenderEngine.Rengine.RengineObjects
     {
         public override Vector3D Center { get; set; }
         public double Radius { get; set; }
+
+        public double Reflectiveness { get; set; }
+
+        public double Refractiveness { get; set; }
         public override Vector3D AlbedoColor { get; set; }
 
         public Sphere (Vector3D _center, double _radius, Vector3D _albedoColor)
@@ -24,7 +28,7 @@ namespace RenderEngine.Rengine.RengineObjects
 
         public Sphere()
         {
-
+            Reflectiveness = 0;
         }
 
         public override double Intersect (Ray ray)
@@ -144,7 +148,7 @@ namespace RenderEngine.Rengine.RengineObjects
             {
                 double t = re.Intersect(ray);
                 Vector3D p = ray.GetPoint3D(t);
-                return re.Shade(ray, t, this.Normal(p), light) ;
+                return re.Shade(ray, t, this.Normal(p), light) * Reflectiveness;
             }
             return new Vector3D(0, 0, 0);
         }

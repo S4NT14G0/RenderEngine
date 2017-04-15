@@ -127,7 +127,7 @@ namespace RenderEngine.Rengine.RengineObjects
         public Vector3D Phong(Vector3D p, Light l, Ray ray)
         {
             // Object color
-            Vector3D k = AlbedoColor;
+            Vector3D k = GetCheckerBoardColor(p) ;
 
             // normal of object
             Vector3D n = Normal(p);
@@ -155,6 +155,28 @@ namespace RenderEngine.Rengine.RengineObjects
             return diffuse + ls + lm;
         }
 
+        public Vector3D GetCheckerBoardColor (Vector3D p)
+        {
+            double sx = Math.Sin(0.5 * Math.PI * p.X);
+            double sy = Math.Sin(0.5 * Math.PI * p.Z);
+            double s = sx * sy / 2.0 + 0.5;
+
+            if (s < .5)
+                return new Vector3D(0, 0, 0);
+            else
+                return new Vector3D(255, 255, 255);
+        }
+
+        double Modulo (double x)
+        {
+            return x - Math.Floor(x);
+        }
+
+        public double DegreesToRadians (double degrees)
+        {
+            double radians = (Math.PI / 180) * degrees;
+            return radians;
+        }
 
         Vector3D ColorOfReflection(Ray ray, Light light)
         {
@@ -164,7 +186,7 @@ namespace RenderEngine.Rengine.RengineObjects
             {
                 double t = re.Intersect(ray);
                 Vector3D p = ray.GetPoint3D(t);
-                return re.Shade(ray, t, this.Normal(p), light) * 0.75;
+                return re.Shade(ray, t, this.Normal(p), light) * 0.35;
             }
             return new Vector3D(0, 0, 0);
         }

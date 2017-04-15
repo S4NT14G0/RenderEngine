@@ -41,6 +41,7 @@ namespace RenderEngine
             float radius = 10;
             Vector3D color = new Vector3D(101, 0, 0);
             Sphere s1 = new Sphere(center, radius, color);
+            s1.Reflectiveness = .95;
 
             Vector3D center1 = new Vector3D(-12, 15, -27);
             float radius1 = 10;
@@ -53,7 +54,7 @@ namespace RenderEngine
 
             Scene.Instance.SceneObjects.Add(s2);
             Scene.Instance.SceneObjects.Add(s1);
-            //Scene.Instance.SceneObjects.Add(p);
+            Scene.Instance.SceneObjects.Add(p);
 
             Scene.Instance.DirectionalLight = light;
             Scene.Instance.MainCamera = cam;

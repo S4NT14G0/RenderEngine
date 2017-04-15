@@ -19,8 +19,13 @@ namespace RenderEngine.Rengine.RengineObjects
 
         RengineImage canvas;
 
+        private int width;
+        private int height;
+
         public Camera(int renderWidth, int renderHeight)
         {
+            width = renderWidth;
+            height = renderHeight;
             canvas = new RengineImage(renderWidth, renderHeight);
         }
 
@@ -42,7 +47,7 @@ namespace RenderEngine.Rengine.RengineObjects
             // Background color
             Vector3D kb = scene.SkyBoxColor;
 
-            Vector3D[,] pixels = new Vector3D[canvas.GetWidth(), canvas.GetHeight()];
+            Vector3D[,] pixels = new Vector3D[width, height];
 
             for (int i = 0; i < pixels.GetLength(0); i++)
             {
@@ -65,6 +70,7 @@ namespace RenderEngine.Rengine.RengineObjects
                     canvas.SetPixel(i, j, Color.FromArgb(255, r, g, b));
                 }
             }
+
         }
 
         private Vector3D GetPoint_s (int i, int j, double focal, int canvasRows, int canvasCols)

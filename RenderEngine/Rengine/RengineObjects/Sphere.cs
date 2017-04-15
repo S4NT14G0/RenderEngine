@@ -123,10 +123,30 @@ namespace RenderEngine.Rengine.RengineObjects
             Vector3D h = v + l.Position;
             h.Normalize();
 
-            Vector3D ls = k * Math.Pow(System.Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
+            // Reflection vector
+            Vector3D r = 2 * (Vector3D.DotProduct(n, v)) * n - v;
 
-            return diffuse + ls;
+            // Reflective color
+            Ray reflectionRay = new Ray(p, p - r);
+            Vector3D pPrime = reflectionRay.GetPoint3D(.005);
+            reflectionRay = new Raycast.Ray(pPrime, pPrime - r);
+            Vector3D lm = ColorOfReflection(new Ray(p, p - r), l);
+
+            Vector3D ls = k * Math.Pow(Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
+            return diffuse + ls + lm;
         }
 
+        Vector3D ColorOfReflection(Ray ray, Light light)
+        {
+            RengineObject re = ray.Hit();
+
+            if (re != null && re != this)
+            {
+                double t = re.Intersect(ray);
+                Vector3D p = ray.GetPoint3D(t);
+                return re.Shade(ray, t, this.Normal(p), light) ;
+            }
+            return new Vector3D(0, 0, 0);
+        }
     }
 }

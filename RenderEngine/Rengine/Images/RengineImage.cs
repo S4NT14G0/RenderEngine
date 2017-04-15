@@ -28,6 +28,7 @@ namespace RenderEngine.Rengine
             height = _height;
 
             bitmapImage = new Bitmap(width, height);
+            bitmapImage.SetResolution(width, height);
             pixels = new int[width, height];
         }
 

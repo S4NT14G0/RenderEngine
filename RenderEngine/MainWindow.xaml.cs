@@ -37,23 +37,28 @@ namespace RenderEngine
             Rengine.RengineObjects.Light light = new Rengine.RengineObjects.Light(new Vector3D(.7, .7, .7));
 
             //Create spheres
-            Vector3D center = new Vector3D(11, 15, -30);
+            Vector3D center = new Vector3D(25, 15, -30);
             float radius = 10;
             Vector3D color = new Vector3D(101, 0, 0);
             Sphere s1 = new Sphere(center, radius, color);
             s1.Reflectiveness = .95;
 
-            Vector3D center1 = new Vector3D(-12, 15, -27);
+            Vector3D center1 = new Vector3D(-25, 15, -27);
             float radius1 = 10;
             Vector3D color1 = new Vector3D(100, 100, 0);
             Sphere s2 = new Sphere(center1, radius1, color1);
 
+            Vector3D center2 = new Vector3D(0, 15, -25);
+            float radius2 = 10;
+            Vector3D color2 = new Vector3D(100, 100, 0);
+            Sphere s3 = new Sphere(center2, radius2, color2, "C:\\Users\\Santiago\\Documents\\GitHub\\RenderEngine\\RenderEngine\\res\\bball.jpg");
+
             Plane p = new Plane(new Vector3D(0 , 1, 0), 1);
-            //p.AlbedoColor = new Vector3D(124, 252, 15);
             p.AlbedoColor = new Vector3D(255, 255, 255);
 
             Scene.Instance.SceneObjects.Add(s2);
             Scene.Instance.SceneObjects.Add(s1);
+            Scene.Instance.SceneObjects.Add(s3);
             Scene.Instance.SceneObjects.Add(p);
 
             Scene.Instance.DirectionalLight = light;

@@ -1,10 +1,11 @@
-﻿ using RenderEngine.Rengine.Raycast;
+﻿using RenderEngine.Rengine.Raycast;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 
 namespace RenderEngine.Rengine.RengineObjects
@@ -16,6 +17,8 @@ namespace RenderEngine.Rengine.RengineObjects
 
         public double Reflectiveness { get; set; }
 
+        private Bitmap image;
+
         public double Refractiveness { get; set; }
         public override Vector3D AlbedoColor { get; set; }
 
@@ -24,6 +27,14 @@ namespace RenderEngine.Rengine.RengineObjects
             Center = _center;
             Radius = _radius;
             AlbedoColor = _albedoColor;
+        }
+
+        public Sphere(Vector3D _center, double _radius, Vector3D _albedoColor, string _texturePath)
+        {
+            Center = _center;
+            Radius = _radius;
+            AlbedoColor = _albedoColor;
+            image = (Bitmap)Image.FromFile(_texturePath);
         }
 
         public Sphere()
@@ -65,26 +76,26 @@ namespace RenderEngine.Rengine.RengineObjects
 
         public override Vector3D GetColor (Ray ray, Vector3D light)
         {
-            double t = Intersect(ray);
+            //double t = Intersect(ray);
 
-            if (!double.IsInfinity(t))
-            {
-                Vector3D p = ray.GetPoint3D(t);
+            //if (!double.IsInfinity(t))
+            //{
+            //    Vector3D p = ray.GetPoint3D(t);
 
-                Vector3D n = Normal(p);
-                Vector3D one = new Vector3D(1, 1, 1);
-                Vector3D ld = AlbedoColor * System.Math.Max(0, Vector3D.DotProduct(n , one));
-                Vector3D v = ray.E - p;
-                v.Normalize();
-                double phong = 128;
-                Vector3D h = v + light;
-                h.Normalize();
-                Vector3D ls = AlbedoColor * System.Math.Pow(System.Math.Max (0, Vector3D.DotProduct(h , n)), phong);
-                return ld + ls;
-            } else
-            {
+            //    Vector3D n = Normal(p);
+            //    Vector3D one = new Vector3D(1, 1, 1);
+            //    Vector3D ld = AlbedoColor * System.Math.Max(0, Vector3D.DotProduct(n , one));
+            //    Vector3D v = ray.E - p;
+            //    v.Normalize();
+            //    double phong = 128;
+            //    Vector3D h = v + light;
+            //    h.Normalize();
+            //    Vector3D ls = AlbedoColor * System.Math.Pow(System.Math.Max (0, Vector3D.DotProduct(h , n)), phong);
+            //    return ld + ls;
+            //} else
+            //{
                 return new Vector3D(0, 0, 0);
-            }
+            //}
         }
 
         public override Vector3D Shade(Ray ray, double t, Vector3D normal, Light light)
@@ -105,13 +116,22 @@ namespace RenderEngine.Rengine.RengineObjects
             if (shadowRay.Hit() != null && shadowRay.Hit() != this)
                 return color;
 
+
+
             return color + Phong(p, light, ray);
         }
 
         public Vector3D Phong(Vector3D p, Light l, Ray ray)
         {
-            // Object color
+            double p_phong = 128;
+
             Vector3D k = AlbedoColor;
+
+            if (image != null)
+            {
+                k = TextureColorAtPoint(p);
+                p_phong = 512;
+            }
 
             // normal of object
             Vector3D n = Normal(p);
@@ -119,9 +139,11 @@ namespace RenderEngine.Rengine.RengineObjects
             // Diffuse shading
             Vector3D diffuse = k * Math.Max(0, Vector3D.DotProduct(l.Position, n));
 
+            if (image != null)
+                return diffuse;
+
             Vector3D v = (ray.E - p);
             v.Normalize();
-            double p_phong = 128;
 
             // Direction of the bounced light
             Vector3D h = v + l.Position;
@@ -138,6 +160,36 @@ namespace RenderEngine.Rengine.RengineObjects
 
             Vector3D ls = k * Math.Pow(Math.Max(0, Vector3D.DotProduct(h, n)), p_phong);
             return diffuse + ls + lm;
+        }
+
+        Vector3D TextureColorAtPoint (Vector3D p)
+        {
+            Vector3D d = p - Center;
+            d.Normalize();
+
+            double u = CalculateU(d);
+            double v = CalculateV(d);
+
+            int x = (int)(u * image.Width);
+            int y = (int)(v * image.Height);
+
+            Color col = image.GetPixel(x, y);
+
+
+            return new Vector3D(col.R, col.G, col.B);
+        }
+
+
+        double CalculateU(Vector3D d)
+        {
+            double u = 0.5 + (Math.Atan2(d.Z, d.X) / (2 * Math.PI));
+            return u;
+        }
+
+        double CalculateV(Vector3D d)
+        {
+            double v = 0.5 - (Math.Asin(d.Y) / Math.PI);
+            return v;
         }
 
         Vector3D ColorOfReflection(Ray ray, Light light)
